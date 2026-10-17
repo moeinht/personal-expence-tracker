@@ -28,11 +28,12 @@ def save_expense(expense: Expense) -> None:
         )
 
 
-def load_expenses() -> list[Expense]:
+def load_expenses() -> tuple[list[Expense], list[str]]:
     if not DATA_FILE.exists() or DATA_FILE.stat().st_size == 0:
-        return []
+        return ([], [])
 
     expenses = []
+    categories = set()
 
     with DATA_FILE.open("r", newline="", encoding="utf-8") as file:
         reader = csv.DictReader(file)
@@ -44,6 +45,7 @@ def load_expenses() -> list[Expense]:
                 category=row["category"],
                 description=row["description"],
             )
+            categories.add(expense.category)
             expenses.append(expense)
 
-    return expenses
+    return (expenses, sorted(categories))

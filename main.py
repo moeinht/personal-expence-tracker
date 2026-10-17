@@ -2,10 +2,52 @@ import datetime
 from decimal import Decimal, InvalidOperation
 
 from models import Expense
+from reports import total_expenses
 from tracker import ExpenseTracker
 
+tracker = ExpenseTracker()
 
-def get_non_empty_text(prompt):
+
+def display_menu():
+    print("\n=== Personal Expense Tracker ===")
+    print("1. Add Expense")
+    print("2. View Expenses")
+    print("3. View Reports")
+    print("0. Exit")
+
+
+def get_category() -> str:
+    categories = tracker.categories
+
+    if not categories:
+        return get_non_empty_text("Enter a new category: ")
+
+    print("\n=== Existing Categories ===")
+
+    for index, category in enumerate(categories, start=1):
+        print(f"{index}. {category}")
+
+    print("0. Add a new category")
+
+    while True:
+        choice = input("Choose a category number or enter 0 for a new one: ").strip()
+
+        if choice == "0":
+            return get_non_empty_text("Enter a new category: ")
+
+        try:
+            index = int(choice)
+        except ValueError:
+            print("Please enter a valid number.")
+            continue
+
+        if 1 <= index <= len(categories):
+            return categories[index - 1]
+
+        print("Invalid category number. Try again.")
+
+
+def get_non_empty_text(prompt: str) -> str:
     while True:
         value = input(prompt).strip()
 
@@ -16,7 +58,7 @@ def get_non_empty_text(prompt):
         return value
 
 
-def get_amount():
+def get_amount() -> Decimal:
     while True:
         amount_input = input("Enter amount: ").strip()
 
@@ -37,14 +79,6 @@ def get_amount():
         return amount
 
 
-def display_menu():
-    print("\n=== Personal Expense Tracker ===")
-    print("1. Add Expense")
-    print("2. View Expenses")
-    print("3. View Reports")
-    print("0. Exit")
-
-
 def add_expense():
     category = get_non_empty_text("Enter category: ")
     amount = get_amount()
@@ -57,40 +91,59 @@ def add_expense():
         description=description,
     )
 
-    print("Expense created successfully!")
+    tracker.add_expense(expense)
+    print("Expense added successfully!")
 
 
 def view_expenses():
-    print("View Expenses selected")
+    if not tracker.expenses:
+        print("No expenses found.")
+        return
+
+    print("\n=== Your Expenses ===")
+
+    for index, expense in enumerate(tracker.expenses, start=1):
+        print(f"\nExpense #{index}")
+        print(f"Amount: {expense.amount:.2f}")
+        print(f"Date: {expense.date}")
+        print(f"Category: {expense.category}")
+        print(f"Description: {expense.description}")
 
 
 def view_reports():
-    print("View Reports selected")
+    total = total_expenses(tracker.expenses)
+
+    print("\n=== Expense Reports ===")
+    print(f"Total expenses: {total:.2f}")
 
 
 def main():
-    actions = {1: add_expense, 2: view_expenses, 3: view_reports}
-    tracker = ExpenseTracker()
+    actions = {
+        1: add_expense,
+        2: view_expenses,
+        3: view_reports,
+    }
 
     while True:
+        display_menu()
+
         try:
-            display_menu()
-            user_input = int(input("Enter one of the options here:"))
-
-            if not user_input:
-                print("Good Byyyyy")
-                break
-
-            action = actions.get(user_input)
-
-            if action is None:
-                print("Please enter value between (1,2,3,0)")
-                continue
-
-            action()
-
+            choice = int(input("Choose an option: "))
         except ValueError:
-            print("Enter correct value!")
+            print("Please enter a valid integer.")
+            continue
+
+        if choice == 0:
+            print("Goodbye!")
+            break
+
+        action = actions.get(choice)
+
+        if action is None:
+            print("Invalid option. Choose 0, 1, 2, or 3.")
+            continue
+
+        action()
 
 
 if __name__ == "__main__":
