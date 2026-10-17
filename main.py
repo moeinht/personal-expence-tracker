@@ -80,7 +80,7 @@ def get_amount() -> Decimal:
 
 
 def add_expense():
-    category = get_non_empty_text("Enter category: ")
+    category = get_category()
     amount = get_amount()
     description = get_non_empty_text("Enter description: ")
 
