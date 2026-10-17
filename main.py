@@ -2,6 +2,7 @@ import datetime
 from decimal import Decimal, InvalidOperation
 
 from models import Expense
+from tracker import ExpenseTracker
 
 
 def get_non_empty_text(prompt):
@@ -69,6 +70,7 @@ def view_reports():
 
 def main():
     actions = {1: add_expense, 2: view_expenses, 3: view_reports}
+    tracker = ExpenseTracker()
 
     while True:
         try:
