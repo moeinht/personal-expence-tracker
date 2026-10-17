@@ -19,7 +19,7 @@ def total_expenses(expenses: list[Expense]) -> Decimal:
 
 
 def export_file(expenses: list[Expense]):
-    if not os.path.exists(EXPORTS_PATH):
+    if not EXPORTS_PATH.exists():
         os.makedirs(EXPORTS_PATH)
 
     with open(f"./exports/export_{datetime.now()}.csv", "w", newline="") as file:
