@@ -2,7 +2,7 @@ import datetime
 from decimal import Decimal, InvalidOperation
 
 from models import Expense
-from reports import total_expenses
+from reports import export_file, total_expenses
 from tracker import ExpenseTracker
 
 tracker = ExpenseTracker()
@@ -13,6 +13,7 @@ def display_menu():
     print("1. Add Expense")
     print("2. View Expenses")
     print("3. View Reports")
+    print("4. Export Report")
     print("0. Exit")
 
 
@@ -117,11 +118,17 @@ def view_reports():
     print(f"Total expenses: {total:.2f}")
 
 
+def export():
+    export_file(tracker.expenses)
+    print("The files has been exported")
+
+
 def main():
     actions = {
         1: add_expense,
         2: view_expenses,
         3: view_reports,
+        4: export,
     }
 
     while True:
@@ -140,7 +147,7 @@ def main():
         action = actions.get(choice)
 
         if action is None:
-            print("Invalid option. Choose 0, 1, 2, or 3.")
+            print("Invalid option. Choose 0, 1, 2, 3 or 4.")
             continue
 
         action()
